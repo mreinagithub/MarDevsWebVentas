@@ -1,0 +1,5 @@
+# Carpetas de compilacion #
+MarDevsWeb.Venta/bin
+MarDevsWeb.Venta/obj
+MarDevsWeb.Venta/MarDevsWeb.Venta.csproj.user
+.vs

@@ -1,0 +1,61 @@
+﻿
+@inject IJSRuntime js
+
+<div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay;" 
+     aria-labelledby="mySmallModalLabel" aria-hidden="true" id="modalIdMensaje">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <P class="modal-title">
+                    Contactar al anunciante
+                </P>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="AlCerrarModal"></button>
+                @*<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" >
+                    <span aria-hidden="true">&times;</span>
+                </button>*@
+            </div>
+            <div class="modal-body">
+                ACA VA A IR EL CUERPO DEL EMAIL.. SERÍA UN TEXTOX PARA PONER EL CORREO DEL REMITENTE
+                UN BODY PARA QUE ESCRIBA TIPO TEXTAREA
+            </div>
+            <div class="modal-footer">                
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnEnviarEmail" @onclick="EnviarEmail">Enviar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+
+    [Parameter] public EventCallback AlCerrarModal { get; set; }
+
+    private string modalDisplay = "none;";
+    private string modalClass = "";
+    private bool showBackdrop = false;
+
+    public void Open()
+    {
+        modalDisplay = "block;";
+        modalClass = "show";
+        showBackdrop = true;
+    }
+
+    public void Close()
+    {
+        modalDisplay = "none";
+        modalClass = "";
+        showBackdrop = false;
+    }
+
+    async Task EnviarEmail()
+    {
+         //await js.InvokeVoidAsync("sendEmail");
+         Close();
+    }
+
+}
