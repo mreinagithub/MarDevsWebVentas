@@ -1,0 +1,207 @@
+﻿@page "/peugeot-206"
+
+@inject IJSRuntime js
+
+<PageTitle>MarDevs - Venta Peugeot 208</PageTitle>
+<HeadContent>
+    <meta name="description" content="Venta de Peugeot 206 en excelentes condiciones - zona oeste" />
+    <meta name="keywords" content="Venta, automovil, auto, Peugeot, 206, full, 1999, excelente" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Peugeot 206 XT 1.6 5 Puertas" />
+    <meta property="og:url" content="https://mardevs.ddns.net/ventas/peugeot-206" />
+    <meta property="og:description" content="Venta de Peugeot 206 en excelentes condiciones, titular, papeles al día." />
+    <meta property="og:image" content="https://mardevs.ddns.net/ventas/imgPreview.jpg" />
+    <meta property="og:image:type" content="image/jpg" />
+    <meta property="og:image:width" content="200" />
+    <meta property="og:image:height" content="300" />
+    <meta property="og:image:alt" content="Imagen del auto" />
+</HeadContent>
+
+<div class="row">
+    <div class="col-12">
+        <h2 class="text-center cls-vendido">Peugeot 206 XT 1.6 5 Puertas</h2>                
+    </div>    
+</div>
+
+<div class="row">
+    <div class="col-12 col-lg-6">
+
+        @if (@items != null)
+        {
+
+            <BSCarousel HasControls="true" HasIndicators="true" IsFade="true">
+                 @foreach(var item in items)
+                    {
+                        <BSCarouselItem>                                                  
+                            <img src="@item.Source" class="img-fluid" alt="@item.Alt"/>                    
+                        </BSCarouselItem>             
+                    }   
+            </BSCarousel>
+        }        
+    </div>
+    <div class="col-12 col-lg-6 mt-resize">        
+        <h2 class="float-end" style="color:red"><b>VENDIDO</b></h2>
+        @*<h5 style="padding-top:10px;" class="text-nowrap">Características</h5>*@
+        <table class="table table-striped table-sm">           
+            <tbody>
+                <tr>
+                    <td><b>Marca</b></td>
+                    <td>Peugeot</td>
+                </tr>
+                <tr>
+                    <td><b>Modelo</b></td>
+                    <td>206 XT</td>
+                </tr>
+                <tr>
+                    <td><b>Año</b></td>
+                    <td>1999</td>
+                </tr>
+                <tr>
+                    <td><b>Color</b></td>
+                    <td>Celeste</td>
+                </tr>
+                <tr>
+                    <td><b>Tipo Combustible</b></td>
+                    <td>Nafta</td>
+                </tr>
+                <tr>
+                    <td><b>Puertas</b></td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <td><b>Transmisión</b></td>
+                    <td>Manual</td>
+                </tr>
+                <tr>
+                    <td><b>Motor</b></td>
+                    <td>1.6</td>
+                </tr>
+                <tr>
+                    <td><b>Tipo Carrocería</b></td>
+                    <td>Hatchback</td>
+                </tr>
+                <tr>
+                    <td><b>Kilómetros</b></td>
+                    <td>180.000</td>
+                </tr>
+            </tbody>        
+        </table>
+
+         <hr />   
+
+         <h5>Información general/comodidades</h5>
+         <ul>
+             <li>Aire Acondicionado</li>
+             <li>Levanta vidrios eléctricos delanteros</li>
+             <li>Comando eléctrico interior retrovisores</li>
+             <li>Cierre centralizado</li>
+             <li>Airbag conductor y acompañante</li>
+             <li>Rueda de auxilio con kit completo</li>
+             <li>Faros antiniebla delanteros y trasero</li>
+             <li>Estereo usb + 4 parlantes (los 2 delanteros nuevos)</li>
+             <li>Techo solar corredizo</li>
+         </ul>
+
+         <hr />   
+
+         <h5>Observaciones</h5>
+         <p>
+             Titular con papeles al día listo para transferir SIN deudas.<br />
+             Excelente andar, mecánica y VTV al día. Tiene detalles de chapa y pintura propios del uso y el tiempo; el Interior está en excelentes condiciones, polarizado nuevo.<br />             
+             Se puede pasar a ver coordinando previamente, me encuentro en Hurlingham, Zona Oeste del Gran Buenos Aires.<br />
+             El precio se puede conversar.
+         </p>
+
+          <hr /> 
+          <p>Podés contactarme al whatsapp o por correo a: martinreina84@hotmail.com</p>
+
+    </div>
+</div>
+
+<a href="javascript:void(0)" class="email-button" @onclick="async () => await mailModal.Open()">     
+    <i class="fa-solid fa-message email-icon"></i>    
+</a>
+	
+<a href="https://wa.me/541130715167?text=Hola!%20Te%20contacto%20por%20el%20Peugeot%20206%20que%20tenés%20a%20la%20venta" class="whatsapp-button" target="_blank">     
+    <i class="fa-brands fa-whatsapp whatsapp-icon"></i>    
+</a>
+
+
+     <EnviarEmailModal @ref="mailModal" AlCerrarModal="async () => await mailModal.Close()">               
+            </EnviarEmailModal>
+
+
+@code{
+    IList<Item>? items = null;
+      
+    EnviarEmailModal mailModal;
+
+    class Item
+    {
+        public string Source { get; set; } = "";
+        public string Alt { get; set; } = "";
+        public string Caption { get; set; } = "";
+        public string Header { get; set; } = "";
+
+    }
+
+    protected override void OnInitialized()
+    {
+        items = new List<Item>
+        {
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/01.jpg", Alt = "Slide 1"
+            }
+            ,
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/02.jpg", Alt = "Slide 2"
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/03.jpg", Alt = "Slide 3"            
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/04.jpg", Alt = "Slide 4"            
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/05.jpg", Alt = "Slide 5"            
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/06.jpg", Alt = "Slide 6"
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/07.jpg", Alt = "Slide 7"
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/08.jpg", Alt = "Slide 8"
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/09.jpg", Alt = "Slide 9"
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/10.jpg", Alt = "Slide 10"
+            },
+            new Item
+            {
+                Source = "./Imagenes/Peugeot206/11.jpg", Alt = "Slide 11"
+            }
+        };
+    }
+
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await js.InvokeVoidAsync("setFooterText");
+    }       
+ 
+
+}

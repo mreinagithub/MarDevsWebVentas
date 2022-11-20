@@ -1,25 +1,54 @@
 ﻿
 @inject IJSRuntime js
+@*@inject HttpClient httpClient*@
+
+@using System.Text.Json;
+@using System.Text
+@using System.Text.RegularExpressions
 
 <div class="modal @modalClass" tabindex="-1" role="dialog" style="display:@modalDisplay;" 
      aria-labelledby="mySmallModalLabel" aria-hidden="true" id="modalIdMensaje">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <P class="modal-title">
+                <p class="modal-title">
                     Contactar al anunciante
-                </P>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="AlCerrarModal"></button>
-                @*<button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" >
-                    <span aria-hidden="true">&times;</span>
-                </button>*@
+                </p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="AlCerrarModal"></button>              
             </div>
             <div class="modal-body">
-                ACA VA A IR EL CUERPO DEL EMAIL.. SERÍA UN TEXTOX PARA PONER EL CORREO DEL REMITENTE
-                UN BODY PARA QUE ESCRIBA TIPO TEXTAREA
+               <div class="row">                            
+                        <div class="col-12">                                
+                             <div class="form-group mb-1">                                    
+                                 <label class="control-label small mb-0 font-weight-bold">E-mail de contacto</label>                                                                                                                                
+                                 <input @bind="@contacto" class="form-control" id="txtEmail"></input>
+                             </div>                            
+                        </div>
+                    </div>
+                      <div class="row">                            
+                        <div class="col-12">                                
+                             <div class="form-group mb-1">                                    
+                                 <label class="control-label small mb-0 font-weight-bold">Mensaje</label>                                                                                                                                
+                                 <textarea @bind="@cuerpo" class="form-control" id="txtBody" rows="5" style="resize:none"></textarea>
+                             </div>                            
+                        </div>
+                    </div>
+                @if (!String.IsNullOrWhiteSpace(errorAlEnviar))
+                {
+                    <p style="text-align:left;color:red">@errorAlEnviar</p>
+                }
             </div>
-            <div class="modal-footer">                
-                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnEnviarEmail" @onclick="EnviarEmail">Enviar</button>
+            <div class="modal-footer">                   
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnEnviarEmail" @onclick="EnviarEmail">                     
+                    @if (!enviando)                                
+                    {                                    
+                        <Text>Enviar</Text>                                
+                    }                                
+                    else                                
+                    {                                    
+                        <i class="fas fa-circle-notch fa-spin"></i><text> Enviando...</text>                                
+                    }                            
+                </button>
             </div>
         </div>
     </div>
@@ -38,24 +67,109 @@
     private string modalClass = "";
     private bool showBackdrop = false;
 
-    public void Open()
+
+    EmailDTO envio = new EmailDTO();
+    private bool enviando = false;
+    private string errorAlEnviar = "";
+    string contacto = "";
+    string cuerpo = "";    
+
+
+    public async Task Open()
     {
         modalDisplay = "block;";
         modalClass = "show";
         showBackdrop = true;
+
+        await js.InvokeVoidAsync("focusElement", "txtEmail");
+
     }
 
-    public void Close()
+    public async Task Close()
     {
+        RestablecerForm();
+
         modalDisplay = "none";
         modalClass = "";
         showBackdrop = false;
     }
 
+    private void RestablecerForm()
+    {
+        //Restablecemos todo al cerrar
+        errorAlEnviar = "";
+        enviando = false;
+        contacto = "";
+        cuerpo = "";
+    }
+
     async Task EnviarEmail()
     {
-         //await js.InvokeVoidAsync("sendEmail");
-         Close();
+        //todo: terminar pantalla de envio mail. Debe cargar tu su correo (regular para validarlo) y un textarea para que escriba.
+
+        errorAlEnviar = "";        
+
+        if (string.IsNullOrWhiteSpace(contacto))
+        {
+            errorAlEnviar = "Debe ingresar el correo de contacto.";            
+            return;
+        }
+        contacto = contacto.Trim();
+        if(!Regex.IsMatch(contacto,@"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$"))
+        {
+            errorAlEnviar = "Debe ingresar un correo de contacto válido.";            
+            return;
+        }
+        if(string.IsNullOrWhiteSpace(cuerpo))
+        {
+            errorAlEnviar = "Por favor ingrese un mensaje.";
+            return;
+        }
+
+
+        envio.Asunto = $"Contacto por peugeot 206 - {contacto}";
+        envio.Cuerpo = cuerpo;
+
+
+        enviando = true;
+
+        var http = new HttpClient();
+
+        //var baseurl = httpClient.BaseAddress?.AbsoluteUri;
+
+        //if (!string.IsNullOrWhiteSpace(baseurl) && baseurl.StartsWith("https://localhost"))
+        //{
+        //    http.BaseAddress = new Uri("http://localhost:8081/");
+        //}
+        //else
+        //{
+        //    http.BaseAddress =  new Uri("http://mardevs.ddns.net:8081/");
+        //}
+         
+        http.BaseAddress = new Uri("https://mardevs.ddns.net:448/");
+        var enviarJSON = JsonSerializer.Serialize(envio);
+        var enviarContent = new StringContent(enviarJSON, Encoding.UTF8, "application/json");
+        http.DefaultRequestHeaders.Add("apiKey", "marDevsApiKey-72c01033-0ea5-4a0b-a415-c8acc8aa505e");
+        var responseHttp = await http.PostAsync("api/email/enviar-email", enviarContent);
+        if(!responseHttp.IsSuccessStatusCode)
+        {
+            enviando = false;
+            errorAlEnviar = await responseHttp.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            enviando = false;
+            await Close();   
+        }       
+         
     }
+
+     class EmailDTO
+        {
+            public string Para { get; set; } = "martinreina84@hotmail.com";
+            public string Asunto { get; set; } = "";
+            public string Cuerpo { get; set; } = "";
+            public bool EsHTML { get; set; } = true;
+        }
 
 }
